@@ -40,9 +40,15 @@ object CaraBaseClient {
 
         // Session Integrity Interceptor: Clear vault on 401 Unauthorized
         val integrityInterceptor = Interceptor { chain ->
-            val response = chain.proceed(chain.request())
+            val request = chain.request()
+            val response = chain.proceed(request)
+            
             if (response.code == 401) {
+                // Invariant: Unauthorized access severs the local identity bridge
                 vault.clearToken()
+            } else if (response.code == 429) {
+                // Invariant: Rate limiting is surfaced as a specific security event
+                throw java.io.IOException("Rate limit exceeded. Please back off and retry later.")
             }
             response
         }

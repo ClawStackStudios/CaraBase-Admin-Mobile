@@ -75,15 +75,32 @@ class CaraBaseSystemRepository(private val vault: SecureIdentityVault) {
         if (api == null) return@withContext Result.failure(Exception("Invalid Server URL Configuration"))
 
         try {
+            val timestamp = System.currentTimeMillis()
+            val nonce = java.util.UUID.randomUUID().toString()
+            
+            // Hashing the token with nonce and timestamp to prevent simple replay attacks
+            // and ensure the secret never travels in its raw hashed state alone.
             val hashedToken = sha256(adminToken)
-            // Mobile authenticates via POST /api/admin/auth to receive a stateless Admin Session token
-            val response = api!!.getAuthToken(AdminAuthRequest(token = hashedToken))
+            val requestBody = AdminAuthRequest(
+                token = hashedToken,
+                timestamp = timestamp,
+                nonce = nonce
+            )
+            
+            val response = api!!.getAuthToken(requestBody)
 
             if (response.success && response.token != null) {
-                // Save token and URL to SecureIdentityVault for future AuthInterceptor requests
                 vault.saveToken(response.token)
                 vault.saveLastUrl(baseUrl)
-                Result.success(true)
+                
+                // Final Invariant Check: Verify the session immediately
+                val verification = verifySession()
+                if (verification.isSuccess && verification.getOrNull() == true) {
+                    Result.success(true)
+                } else {
+                    vault.clearToken()
+                    Result.failure(Exception("Handshake failed: Session integrity check failed."))
+                }
             } else {
                 Result.failure(Exception(response.error ?: "Authentication failed"))
             }

@@ -68,7 +68,11 @@ data class UptimeSession(
 )
 
 @Serializable
-data class AdminAuthRequest(val token: String)
+data class AdminAuthRequest(
+    val token: String,
+    val timestamp: Long,
+    val nonce: String
+)
 
 @Serializable
 data class AuthTokenResponse(
