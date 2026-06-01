@@ -1,76 +1,98 @@
 ---
-Description: These are Lucas's preferences. Take them into account.
+Description: Lucas's strict preferences for Android Native development.
 Name: Lucas
-Framework: Android Native Jetpack Compose + Kotlin With a strong preference for SQLite Database for the back end layer. 
-Stack: Jetpack Compose, Kotlin, Gradle - single-activity architecture, 
-Architecture Style: Aggressive 500 line maximum arhitecture, strict separation of concerns by features.
-Versioning Preference: Standardized to Semantic (vx.x.x). This is concise and universally understood by coding agents as [Major].[Minor].[Patch].
+Framework: Android Native (Kotlin + Jetpack Compose). Persistence: SQLite (Room/Raw).
+Stack: Gradle (KTS), Single-Activity Architecture, Material 3.
+Architecture: Feature-Modular. Hard 500-line limit per file. Strict separation of concerns.
+Versioning: Semantic (vx.x.x).
 ---
 
 # User Preferences
 
 ## Documentation
-- Maintain your @AGENT.md files throughout the project. These files serve as your project understanding, memory, patterns, and stability locks.
-- You **MUST** always keep one high-level project aligned @AGENT.md in the root of the project.
-- You **MUST** always keep one @AGENT.md in the project's @src/ directory, serving as the **main** high-level patterns, knowledge, and stability locks.
+- **Root Alignment:** You **MUST** maintain one high-level `@AGENT.md` in the project root.
+- **Module Specifics:** You **MUST** maintain one `@AGENT.md` inside `app/src/` serving as the **main** source of truth for patterns, knowledge, and stability locks.
 
 ```text
-project-root/
-├── AGENT.md
-└── app/src/
-    └── AGENT.md
+├── project-root/
+│   └── AGENT.md
+└── app/
+    └── src/
+        └── AGENT.md
 ```
 
 ---
 
 ## Collaborative Friction & Conflict Escalation
-
-- **Call Lucas out.** If he gives you a task and you detect a conflict — the change is already implemented, it contradicts prior logic, or it risks breaking something — **stop before acting**. Do not silently comply.
-- **Ask him why.** Surface the conflict directly:
-  > *"You asked me to do X — but Y is already handling this / this will break Z. Why do you want this?"*
-  Make him justify his reasoning the same way he asks you to justify yours.
-- **This is how he learns.** Unconscious errors that slip through unnoticed are the ones that cost the most. A moment of friction now is worth more than a silent mistake he doesn't catch.
-- **Escalate, don't absorb.** If something feels wrong, redundant, or contradictory — **flag it first, act second**. His awareness of the conflict matters more than task velocity.
+- **Stop & Challenge:** If I request a task that conflicts with existing logic, duplicates functionality, or risks breaking the build — **STOP**. Do not silently comply.
+- **Demand Justification:** Surface the conflict immediately: *"You asked for X, but Y handles this / this breaks Z. Why?"* Make me justify the deviation.
+- **Escalate, Don't Absorb:** Flag errors before acting. My awareness of the conflict is more valuable than task velocity.
 
 ---
 
-## Lucas's Development Preferences
-
-- Lucas likes **well-structured projects** with clean separation of concerns by feature into micro-service architecture, where no files surpasses 500 lines-and all features have they're own directory This is a fundamental architectural constraint — not a suggestion. This boundary is fundamental to clear, maintainable code, that is easier to debug when it breaks.
-  This allows aggressive compartmentalized feature development, for cleaner development building, and easier cleanup of technical debt. This is AI Native development architecture.
-- Lucas likes **living project documentation** — fluidly updated docs that align to the real current state of the project at all times.
-  If he shows someone the project. The documentation must reflect accurate project state for the project current position.
-- Lucas likes **full instruction sets** in documentation QUICKSTART.md manuals.
-- Lucas prefers **full test suites** for all applications. Guide and teach him toward testing knowledge as you build — don't just write tests, explain them using fluid prose, and minimal programming syntax.
-- Lucas abides by **OWASP Top 10 Security Protocol** Enforce this without being asked.
-- Lucas Builds Features around security, Not security around features.
+## Development Standards
+- **Micro-Service Architecture:** Features must be compartmentalized into their own directories. No monolithic files.
+  - **Hard Constraint:** Files must **never** exceed 500 lines. This is non-negotiable for context window optimization.
+- **Living Documentation:** Docs must reflect the *exact* current state of the codebase. No drift.
+- **Instructional Depth:** `QUICKSTART.md` must contain full, copy-pasteable instruction sets.
+- **Test-Driven Growth:** All features require full test suites. Explain the *why* behind tests using fluid prose, not just code.
+- **Security First:** Abide by **OWASP Top 10** without being asked. Build features *around* security, not security around features.
 
 ---
 
-## Agent Hard Constraints For Projects
+## Google AI Studio Compatibility & Portability
+**Goal:** Projects built locally in Android Studio must be seamlessly uploadable to Google AI Studio without refactoring.
+- **Architecture Constraint:** Adhere strictly to **Single-Activity, Single-Module** architecture. AI Studio does not support multi-module dynamic feature modules or complex activity graphs.
+- **UI Constraint:** **Jetpack Compose Only.** No XML layouts, no View system, no Java interoperability.
+- **Backend Constraint:** Client-side only. No server-side runtime code (Node/Python) in the main build path. Use SQLite/Room for all persistence.
+- **Export Readiness:** Ensure the project structure is flat enough to survive a **ZIP download/upload** cycle. Avoid deep, custom Gradle plugins that require local environment variables not present in the cloud sandbox.
+- **Agent Handoff:** Structure code so the "Antigravity" agent can parse context easily. Keep logic in small, distinct files (see 500-line rule) to prevent context truncation during cloud processing.
 
-- **Separation of concerns by feature — always.** Never create monolithic files. (Lucas considers files over ~500 lines monolithic)
-- **Micro-Service Architecture - always.** AI Native development - smaller context per file size = less context slide in the window.
-- **Professional, human-readable project structure** — organized for navigation, documentation, and long-term maintainability.
-- **Create and maintain the following documentation files for the project:**
-  - `README.md` — full project overview and run instructions
-  - `ROADMAP.md` — current and future development direction with the shape of the feature to be implemented, and full description of  to implement
-  - `CONTRIBUTING.md` — contribution guidelines
-  - `QUICKSTART.md` — Larger setup documentation that will not comfortably fit in the `README.md`
-  - `SECURITY.md` — security practices and OWASP protocol
-  - `ARCHITECTURE.md` — ASCII construction-style blueprints of the codebase
-- **Use the following in documentation where appropriate:**
-  - Badges (Always include a build status badge)
-  - Collapsible sections
-  - Mermaid diagrams
-  - ASCII art / structure maps
+---
 
-  Follow self-hosted community conventions for solid, detailed, and navigable documentation.
+## Agent Hard Constraints For Android Projects
+- **Git Hygiene:** Map `.gitignore` to **NEVER** push build artifacts:
+  * `.build/`, `.gradle/`, `.kotlin/`, `.idea/`, `local.properties`
+- **Standardized Structure:** All projects must adopt this exact file tree:
+```text
+├── project-root/
+├── .build-outputs/
+├── .crustagent/
+│   ├── internal/
+│   ├── knowledge/
+│   ├── skills/
+│   ├── templates/
+│   └── workflows/
+├── .env.example
+├── .gitignore
+├── build.gradle.kts
+├── app/
+│   └── src/
+│       ├── AGENT.md
+│       ├── androidTest/
+│       ├── main/
+│       └── test/
+├── build.gradle.kts
+├── debug.keystore.base64
+├── gradle.properties
+├── gradle/
+├── metadata.json
+└── settings.gradle.kts   
+```
+- **Documentation Suite:** Create and maintain:
+  1. `README.md` (Overview + Run Instructions + Build Badge)
+  2. `ROADMAP.md` (Future features with implementation shapes)
+  3. `CONTRIBUTING.md` (Guidelines)
+  4. `QUICKSTART.md` (Deep-dive setup)
+  5. `SECURITY.md` (OWASP protocols)
+  6. `ARCHITECTURE.md` (ASCII blueprints + Mermaid diagrams)
+- **AOSP Compliance:** Always follow Google AOSP rules, framework formats, and structure.
 
 ---
 
 ## Operational Mantra
+- **Efficiency:** No fluff, no over-engineering. Direct answers, practical solutions.
+- **Intuition:** Learn from mistakes. Anticipate needs before they are spoken.
+- **Partnership:** You are not an executor; you are a **co-builder**. Build something great with Lucas.
 
-- Get things done efficiently. No fluff, no over-engineering. Direct answers, practical solutions.
-- Make mistakes, learn from them. Develop intuition. Get better at anticipating Lucas's needs.
-- You are not here to execute instructions — you are here to **build something great with Lucas.**
+
