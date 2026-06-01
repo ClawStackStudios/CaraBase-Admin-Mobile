@@ -20,6 +20,9 @@ interface CaraBaseApi {
     @POST("/api/admin/auth")
     suspend fun getAuthToken(@Body request: AdminAuthRequest): AuthTokenResponse
 
+    @GET("/api/admin/verify")
+    suspend fun verifySession(): VerifyResponse
+
     @GET("/api/admin/stats")
     suspend fun getSystemStats(): TelemetryResponse
 
@@ -42,7 +45,27 @@ interface CaraBaseApi {
         @Query("event_type") eventType: String? = null,
         @Query("outcome") outcome: String? = null
     ): AuditResponse
+
+    @GET("/api/admin/uptime")
+    suspend fun getUptimeHistory(): UptimeResponse
 }
+
+@Serializable
+data class VerifyResponse(val success: Boolean)
+
+@Serializable
+data class UptimeResponse(
+    val success: Boolean,
+    val data: List<UptimeSession> = emptyList()
+)
+
+@Serializable
+data class UptimeSession(
+    val id: String,
+    val start: String,
+    val end: String? = null,
+    val duration: Long? = null
+)
 
 @Serializable
 data class AdminAuthRequest(val token: String)

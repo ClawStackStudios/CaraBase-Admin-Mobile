@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
@@ -37,8 +38,18 @@ object CaraBaseClient {
 
         val authInterceptor = AuthInterceptor(vault)
 
+        // Session Integrity Interceptor: Clear vault on 401 Unauthorized
+        val integrityInterceptor = Interceptor { chain ->
+            val response = chain.proceed(chain.request())
+            if (response.code == 401) {
+                vault.clearToken()
+            }
+            response
+        }
+
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
+            .addInterceptor(integrityInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)

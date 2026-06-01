@@ -17,15 +17,14 @@ class AuthInterceptor(private val vault: SecureIdentityVault) : Interceptor {
         val originalRequest = chain.request()
         val token = vault.getToken()
 
-        if (token == null) {
-            // Let the request proceed without auth, the server will reject if necessary
-            return chain.proceed(originalRequest)
+        val requestBuilder = originalRequest.newBuilder()
+            .header("User-Agent", "CaraBase-Admin-Mobile/1.0 (Android)")
+            .header("x-client-type", "carabase-admin-mobile")
+
+        if (token != null) {
+            requestBuilder.header("x-admin-session", token)
         }
 
-        val authenticatedRequest = originalRequest.newBuilder()
-            .header("x-admin-session", token)
-            .build()
-
-        return chain.proceed(authenticatedRequest)
+        return chain.proceed(requestBuilder.build())
     }
 }

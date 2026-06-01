@@ -31,7 +31,8 @@ sealed class AdminBottomNavItem(val route: String, val icon: @Composable () -> U
 fun AdminScaffold(
     dashboardViewModel: DashboardViewModel,
     usersViewModel: UsersViewModel,
-    auditViewModel: AuditViewModel
+    auditViewModel: AuditViewModel,
+    onLogout: () -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -84,7 +85,10 @@ fun AdminScaffold(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(AdminBottomNavItem.Dashboard.route) {
-                DashboardScreen(viewModel = dashboardViewModel)
+                DashboardScreen(
+                    viewModel = dashboardViewModel,
+                    onLogout = onLogout
+                )
             }
             composable(AdminBottomNavItem.Users.route) {
                 UsersScreen(viewModel = usersViewModel)

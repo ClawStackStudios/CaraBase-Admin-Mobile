@@ -8,6 +8,7 @@ import com.clawstack.carabaseadmin.data.network.SystemAggregateResponse
 import com.clawstack.carabaseadmin.data.network.UsersResponse
 import com.clawstack.carabaseadmin.data.network.AuditResponse
 import com.clawstack.carabaseadmin.data.network.TelemetryResponse
+import com.clawstack.carabaseadmin.data.network.UptimeResponse
 import com.clawstack.carabaseadmin.data.security.SecureIdentityVault
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -47,6 +48,28 @@ class CaraBaseSystemRepository(private val vault: SecureIdentityVault) {
     }
 
     fun getLastUrl(): String? = vault.getLastUrl()
+
+    fun hasToken(): Boolean = vault.hasToken()
+
+    suspend fun verifySession(): Result<Boolean> = withContext(Dispatchers.IO) {
+        val currentApi = api ?: return@withContext Result.failure(Exception("Invalid Server URL Configuration"))
+        try {
+            val res = currentApi.verifySession()
+            Result.success(res.success)
+        } catch (e: Exception) {
+            Log.e("CaraBaseSystem", "Session Verification Failed", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun logout(): Result<Boolean> = withContext(Dispatchers.IO) {
+        // We clear local first to ensure the user is logged out even if network fails
+        vault.clearToken()
+        // No server call for logout needed as sessions are volatile and 401 handles it, 
+        // but server-side logout is better practice if session was kept in DB.
+        // Here sessions are in Map, so we could call /api/admin/logout if we had it in API.
+        Result.success(true)
+    }
 
     suspend fun authenticate(adminToken: String): Result<Boolean> = withContext(Dispatchers.IO) {
         if (api == null) return@withContext Result.failure(Exception("Invalid Server URL Configuration"))
@@ -126,6 +149,17 @@ class CaraBaseSystemRepository(private val vault: SecureIdentityVault) {
             Result.success(res)
         } catch (e: Exception) {
             Log.e("CaraBaseSystem", "Audit Logs Fetch Failed", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getUptimeHistory(): Result<UptimeResponse> = withContext(Dispatchers.IO) {
+        val currentApi = api ?: return@withContext Result.failure(Exception("Invalid Server URL Configuration"))
+        try {
+            val res = currentApi.getUptimeHistory()
+            Result.success(res)
+        } catch (e: Exception) {
+            Log.e("CaraBaseSystem", "Uptime History Fetch Failed", e)
             Result.failure(e)
         }
     }

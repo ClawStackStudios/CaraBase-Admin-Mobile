@@ -24,7 +24,8 @@ import com.clawstack.carabaseadmin.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel
+    viewModel: DashboardViewModel,
+    onLogout: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -42,6 +43,13 @@ fun DashboardScreen(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "Refresh Stats",
                             tint = CyberEmerald
+                        )
+                    }
+                    IconButton(onClick = { viewModel.logout(onLogout) }) {
+                        Icon(
+                            imageVector = Icons.Default.Logout,
+                            contentDescription = "Logout",
+                            tint = DestructiveRed
                         )
                     }
                 },

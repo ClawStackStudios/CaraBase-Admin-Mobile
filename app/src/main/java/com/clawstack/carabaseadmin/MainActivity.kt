@@ -85,7 +85,12 @@ fun CaraBaseAppNavigation(repository: CaraBaseSystemRepository) {
             AdminScaffold(
                 dashboardViewModel = dashboardViewModel,
                 usersViewModel = usersViewModel,
-                auditViewModel = auditViewModel
+                auditViewModel = auditViewModel,
+                onLogout = {
+                    navController.navigate("gateway") {
+                        popUpTo("dashboard") { inclusive = true }
+                    }
+                }
             )
         }
     }

@@ -18,6 +18,25 @@ class GatewayViewModel(
     ))
     val uiState: StateFlow<GatewayUiState> = _uiState.asStateFlow()
 
+    fun checkExistingSession(onAutoLogin: () -> Unit) {
+        if (repository.hasToken()) {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            viewModelScope.launch {
+                val result = repository.verifySession()
+                result.onSuccess { isValid ->
+                    if (isValid) {
+                        _uiState.value = _uiState.value.copy(isLoading = false, isAuthenticated = true)
+                        onAutoLogin()
+                    } else {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                    }
+                }.onFailure {
+                    _uiState.value = _uiState.value.copy(isLoading = false)
+                }
+            }
+        }
+    }
+
     fun updateUrl(url: String) {
         _uiState.value = _uiState.value.copy(url = url, error = null)
     }

@@ -43,6 +43,13 @@ class DashboardViewModel(
             }
         }
     }
+
+    fun logout(onComplete: () -> Unit) {
+        viewModelScope.launch {
+            repository.logout()
+            onComplete()
+        }
+    }
 }
 
 data class DashboardUiState(
