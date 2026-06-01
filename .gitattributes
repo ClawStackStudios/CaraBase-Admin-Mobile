@@ -1,0 +1,9 @@
+# Handle line endings automatically
+* text=auto
+
+# Ensure gradlew has LF line endings
+gradlew text eol=lf
+*.sh text eol=lf
+
+# Windows batch files should have CRLF
+*.bat text eol=crlf

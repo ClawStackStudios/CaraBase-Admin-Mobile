@@ -1,0 +1,29 @@
+# Built artifacts
+bin/
+gen/
+out/
+build/
+.gradle/
+.kotlin/
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration
+local.properties
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Heap dumps
+*.hprof
+
+# CrustAgent
+.crustagent/
